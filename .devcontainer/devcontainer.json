@@ -6,7 +6,7 @@
       "version": "20"
     },
     "ghcr.io/devcontainers/features/github-cli:1": {},
-    "ghcr.io/devcontainers-contrib/features/postgres-asdf:1": {
+    "ghcr.io/itsmechlark/features/postgresql:1": {
       "version": "16"
     }
   },
@@ -22,7 +22,10 @@
       ]
     }
   },
-  "forwardPorts": [5000, 5173],
+  "forwardPorts": [
+    5000,
+    5173
+  ],
   "portsAttributes": {
     "5000": {
       "label": "Flask",
