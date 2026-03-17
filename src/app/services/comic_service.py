@@ -1,8 +1,8 @@
 """Comic generation service using Hugging Face APIs.
 
 Provides methods to generate comic scripts and images using:
-- HuggingFaceH4/zephyr-7b-beta for script/dialogue generation
-- stabilityai/stable-diffusion-xl-base-1.0 for panel image generation
+- Qwen/Qwen2.5-7B-Instruct for script/dialogue generation
+- black-forest-labs/FLUX.1-schnell for panel image generation
 """
 import base64
 import json
@@ -18,8 +18,8 @@ from ..schemas.comic import ComicPanel, ComicResponse
 logger = logging.getLogger(__name__)
 
 # Model identifiers
-LLM_MODEL = "HuggingFaceH4/zephyr-7b-beta"
-IMAGE_MODEL = "stabilityai/stable-diffusion-xl-base-1.0"
+LLM_MODEL = "Qwen/Qwen2.5-7B-Instruct"
+IMAGE_MODEL = "black-forest-labs/FLUX.1-schnell"
 
 
 class ComicServiceError(Exception):
@@ -48,13 +48,15 @@ class ComicService:
     def _get_client() -> InferenceClient:
         """Get configured InferenceClient with API token."""
         token = current_app.config.get('HF_API_TOKEN')
+        if not token:
+            logger.warning("HF_API_TOKEN not found in configuration. API calls may fail if not logged in via CLI.")
         return InferenceClient(token=token)
 
     @staticmethod
     def generate_script(prompt: str) -> list[dict[str, Any]]:
         """Generate a 3-panel comic script from a user prompt.
 
-        Uses the Zephyr-7b-beta LLM to generate panel descriptions and dialogue.
+        Uses the Qwen2.5-7B-Instruct LLM to generate panel descriptions and dialogue.
 
         Args:
             prompt: User's story idea or funny situation
@@ -85,16 +87,25 @@ Example format:
         user_message = f"Create a 3-panel comic about: {prompt}"
 
         try:
-            response = client.text_generation(
-                prompt=f"<|system|>\n{system_prompt}</s>\n<|user|>\n{user_message}</s>\n<|assistant|>\n",
+            response = client.chat_completion(
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_message}
+                ],
                 model=LLM_MODEL,
-                max_new_tokens=500,
+                max_tokens=500,
                 temperature=0.7,
-                do_sample=True,
             )
 
+            # Extract content from chat completion response
+            content = response.choices[0].message.content
+
+            # Validate content is not empty
+            if not content:
+                raise ComicAPIError("Empty response from LLM")
+
             # Parse JSON from response
-            panels = ComicService._parse_script_response(response)
+            panels = ComicService._parse_script_response(content)
             logger.info(f"Generated script with {len(panels)} panels for prompt: {prompt[:50]}...")
             return panels
 
@@ -105,6 +116,11 @@ Example format:
             raise ComicAPIError(f"Failed to generate comic script: {str(e)}")
         except Exception as e:
             logger.error(f"Unexpected error during script generation: {e}")
+            if "api_key" in str(e).lower() or "hf auth login" in str(e).lower():
+                raise ComicAPIError(
+                    "Missing Hugging Face API token. Please set HF_API_TOKEN in your .env file. "
+                    "You can get a free token at https://huggingface.co/settings/tokens"
+                )
             raise ComicAPIError(f"Script generation failed: {str(e)}")
 
     @staticmethod
@@ -146,7 +162,7 @@ Example format:
     def generate_image(description: str) -> str:
         """Generate a comic panel image from a description.
 
-        Uses Stable Diffusion XL to create a panel image.
+        Uses the FLUX.1-schnell model to create a panel image.
 
         Args:
             description: Visual description of the panel
@@ -189,6 +205,10 @@ Example format:
             raise ComicAPIError(f"Failed to generate panel image: {str(e)}")
         except Exception as e:
             logger.error(f"Unexpected error during image generation: {e}")
+            if "api_key" in str(e).lower() or "hf auth login" in str(e).lower():
+                raise ComicAPIError(
+                    "Missing Hugging Face API token. Please set HF_API_TOKEN in your .env file."
+                )
             raise ComicAPIError(f"Image generation failed: {str(e)}")
 
     @staticmethod

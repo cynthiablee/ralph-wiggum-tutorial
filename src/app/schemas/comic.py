@@ -26,7 +26,7 @@ class ComicGenerateRequest(BaseModel):
     )
 
 
-class ComicPanel(BaseModel):
+class ComicPanel(BaseModel):  # type: ignore[misc]
     """Schema for a single comic panel.
 
     Each panel has a description, dialogue, and optionally a base64 image.
@@ -39,7 +39,7 @@ class ComicPanel(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class ComicResponse(BaseModel):
+class ComicResponse(BaseModel):  # type: ignore[misc]
     """Schema for comic generation response.
 
     Contains the original prompt, generated panels, and timestamp.

@@ -3,6 +3,8 @@
 Encapsulates database operations and business rules for Hello resources.
 Views call controller methods rather than interacting with models directly.
 """
+import typing
+
 from ..models import Hello, db
 from ..schemas import HelloCreate
 
@@ -17,7 +19,7 @@ class HelloController:
         Returns:
             List of all Hello model instances
         """
-        return Hello.query.order_by(Hello.created_at.desc()).all()
+        return typing.cast(list[Hello], Hello.query.order_by(Hello.created_at.desc()).all())
 
     @staticmethod
     def get_by_id(hello_id: int) -> Hello | None:
@@ -29,7 +31,7 @@ class HelloController:
         Returns:
             Hello instance if found, None otherwise
         """
-        return db.session.get(Hello, hello_id)
+        return typing.cast(Hello | None, db.session.get(Hello, hello_id))
 
     @staticmethod
     def create(data: HelloCreate) -> Hello:

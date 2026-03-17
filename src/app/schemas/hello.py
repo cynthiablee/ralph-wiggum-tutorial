@@ -15,7 +15,7 @@ class HelloCreate(BaseModel):
     message: str = Field(..., min_length=1, max_length=255, description="Greeting message text")
 
 
-class HelloResponse(BaseModel):
+class HelloResponse(BaseModel):  # type: ignore[misc]
     """Schema for Hello response serialization.
 
     Used to serialize Hello model instances for API responses.

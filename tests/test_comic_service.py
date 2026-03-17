@@ -75,7 +75,9 @@ class TestGenerateScript:
         self, mock_app: Flask, mock_inference_client: Mock, sample_script_response: str
     ) -> None:
         """Should return exactly 3 panel dictionaries."""
-        mock_inference_client.text_generation.return_value = sample_script_response
+        mock_response = Mock()
+        mock_response.choices = [Mock(message=Mock(content=sample_script_response))]
+        mock_inference_client.chat_completion.return_value = mock_response
 
         panels = ComicService.generate_script("A cat using a computer")
 
@@ -87,20 +89,22 @@ class TestGenerateScript:
     def test_generate_script_calls_correct_model(
         self, mock_app, mock_inference_client, sample_script_response
     ):
-        """Should call the Zephyr LLM model."""
-        mock_inference_client.text_generation.return_value = sample_script_response
+        """Should call the Qwen LLM model."""
+        mock_response = Mock()
+        mock_response.choices = [Mock(message=Mock(content=sample_script_response))]
+        mock_inference_client.chat_completion.return_value = mock_response
 
         ComicService.generate_script("Test prompt")
 
-        mock_inference_client.text_generation.assert_called_once()
-        call_kwargs = mock_inference_client.text_generation.call_args.kwargs
+        mock_inference_client.chat_completion.assert_called_once()
+        call_kwargs = mock_inference_client.chat_completion.call_args.kwargs
         assert call_kwargs['model'] == LLM_MODEL
 
     def test_generate_script_handles_rate_limit(
         self, mock_app, mock_inference_client
     ):
         """Should raise ComicRateLimitError on 429 response."""
-        mock_inference_client.text_generation.side_effect = create_hf_error(
+        mock_inference_client.chat_completion.side_effect = create_hf_error(
             "429 Too Many Requests"
         )
 
@@ -111,7 +115,7 @@ class TestGenerateScript:
         self, mock_app, mock_inference_client
     ):
         """Should raise ComicAPIError on API failure."""
-        mock_inference_client.text_generation.side_effect = create_hf_error(
+        mock_inference_client.chat_completion.side_effect = create_hf_error(
             "500 Internal Server Error"
         )
 
@@ -122,7 +126,9 @@ class TestGenerateScript:
         self, mock_app, mock_inference_client
     ):
         """Should raise ComicAPIError on invalid JSON response."""
-        mock_inference_client.text_generation.return_value = "Not valid JSON"
+        mock_response = Mock()
+        mock_response.choices = [Mock(message=Mock(content="Not valid JSON"))]
+        mock_inference_client.chat_completion.return_value = mock_response
 
         with pytest.raises(ComicAPIError) as exc_info:
             ComicService.generate_script("Test prompt")
@@ -132,9 +138,12 @@ class TestGenerateScript:
         self, mock_app, mock_inference_client
     ):
         """Should raise ComicAPIError if not exactly 3 panels."""
-        mock_inference_client.text_generation.return_value = json.dumps([
+        invalid_response = json.dumps([
             {"panel_number": 1, "description": "Only one", "dialogue": "Panel"}
         ])
+        mock_response = Mock()
+        mock_response.choices = [Mock(message=Mock(content=invalid_response))]
+        mock_inference_client.chat_completion.return_value = mock_response
 
         with pytest.raises(ComicAPIError) as exc_info:
             ComicService.generate_script("Test prompt")
@@ -161,7 +170,7 @@ class TestGenerateImage:
     def test_generate_image_calls_correct_model(
         self, mock_app, mock_inference_client, sample_image
     ):
-        """Should call the Stable Diffusion XL model."""
+        """Should call the FLUX.1-schnell model."""
         mock_inference_client.text_to_image.return_value = sample_image
 
         ComicService.generate_image("Test description")
@@ -212,7 +221,9 @@ class TestGenerateComic:
         self, mock_app, mock_inference_client, sample_script_response, sample_image
     ):
         """Should return ComicResponse with 3 panels."""
-        mock_inference_client.text_generation.return_value = sample_script_response
+        mock_response = Mock()
+        mock_response.choices = [Mock(message=Mock(content=sample_script_response))]
+        mock_inference_client.chat_completion.return_value = mock_response
         mock_inference_client.text_to_image.return_value = sample_image
 
         result = ComicService.generate_comic("A cat using a computer")
@@ -226,7 +237,9 @@ class TestGenerateComic:
         self, mock_app, mock_inference_client, sample_script_response, sample_image
     ):
         """Should include base64 images in panels."""
-        mock_inference_client.text_generation.return_value = sample_script_response
+        mock_response = Mock()
+        mock_response.choices = [Mock(message=Mock(content=sample_script_response))]
+        mock_inference_client.chat_completion.return_value = mock_response
         mock_inference_client.text_to_image.return_value = sample_image
 
         result = ComicService.generate_comic("Test prompt")
@@ -239,7 +252,9 @@ class TestGenerateComic:
         self, mock_app, mock_inference_client, sample_script_response
     ):
         """Should continue with None images if image generation fails."""
-        mock_inference_client.text_generation.return_value = sample_script_response
+        mock_response = Mock()
+        mock_response.choices = [Mock(message=Mock(content=sample_script_response))]
+        mock_inference_client.chat_completion.return_value = mock_response
         mock_inference_client.text_to_image.side_effect = ComicAPIError("Image failed")
 
         result = ComicService.generate_comic("Test prompt")
@@ -255,7 +270,7 @@ class TestGenerateComic:
         self, mock_app, mock_inference_client
     ):
         """Should propagate errors from script generation."""
-        mock_inference_client.text_generation.side_effect = create_hf_error(
+        mock_inference_client.chat_completion.side_effect = create_hf_error(
             "503 Service Error"
         )
 
@@ -270,7 +285,9 @@ class TestComicViewIntegration:
         self, mock_app, mock_inference_client, sample_script_response, sample_image
     ):
         """POST /api/comic/generate should return comic JSON."""
-        mock_inference_client.text_generation.return_value = sample_script_response
+        mock_response = Mock()
+        mock_response.choices = [Mock(message=Mock(content=sample_script_response))]
+        mock_inference_client.chat_completion.return_value = mock_response
         mock_inference_client.text_to_image.return_value = sample_image
 
         with mock_app.test_client() as client:

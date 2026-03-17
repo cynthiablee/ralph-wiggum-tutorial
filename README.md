@@ -20,6 +20,26 @@ This initializes the Python virtual environment, installs dependencies, sets up 
 
 Starts both the Flask backend (http://localhost:5000) and React frontend (http://localhost:5173).
 
+## Configuration
+
+### Hugging Face API Token (Required for Comic Generation)
+
+To use the comic generation feature, you need a Hugging Face API token. Even though the models used are free (`Qwen/Qwen2.5-7B-Instruct` and `black-forest-labs/FLUX.1-schnell`), the API requires authentication.
+
+1.  **Get a Token:**
+    *   Sign up or log in at [huggingface.co](https://huggingface.co/join).
+    *   Go to [Settings > Access Tokens](https://huggingface.co/settings/tokens).
+    *   Click "Create new token".
+    *   Give it a name (e.g., `ralph-wiggum-comic`) and select "Read" permissions.
+    *   Copy the token (starts with `hf_...`).
+
+2.  **Configure Environment:**
+    *   Add the token to your `.env` file:
+        ```bash
+        HF_API_TOKEN=hf_your_token_here
+        ```
+    *   Restart the server: `./script/server`
+
 ## Tech Stack
 
 - **Backend**: Flask 3, SQLAlchemy 2, Python 3.11+
