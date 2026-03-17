@@ -25,5 +25,5 @@ repos:
     rev: v1.8.0
     hooks:
       - id: mypy
-        additional_dependencies: [types-Flask]
+        additional_dependencies: [types-Flask, sqlalchemy, pydantic, flask-sqlalchemy]
         args: ['--ignore-missing-imports']

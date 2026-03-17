@@ -6,10 +6,10 @@ for creating additional models in the application.
 from datetime import datetime
 from sqlalchemy import String, func
 from sqlalchemy.orm import Mapped, mapped_column
-from .base import db
+from .base import Base
 
 
-class Hello(db.Model):
+class Hello(Base):
     """Hello model representing a greeting message.
 
     Attributes:
