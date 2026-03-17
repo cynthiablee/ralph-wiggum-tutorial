@@ -23,10 +23,13 @@ Run these slash commands to clean up code:
 
 ## Validation
 
-Run these after implementing to get immediate feedback:
+IMPORTANT ALWAYS RUN these after implementing to get immediate feedback:
 
 - Tests: `script/test` → `pytest` + `vitest`
   - Direct: `PYTHONPATH=src pytest tests/` (backend) + `cd frontend && npm test` (frontend)
+- E2E: `script/test-e2e` → Playwright browser tests
+  - Direct: `npx playwright test` (auto-starts dev servers)
+  - UI mode: `script/test-e2e --ui`
 - Typecheck: `script/typecheck` → `mypy` + `tsc`
   - Direct: `mypy src/ --ignore-missing-imports` + `cd frontend && npm run typecheck`
 - Lint: `script/lint` → `flake8` + `eslint`
@@ -45,6 +48,11 @@ Run these after implementing to get immediate feedback:
 - Frontend: React in `frontend/`, compiled to static assets
 - Templates: Jinja2 with Islands hydration points (`data-island` attributes)
 - Migrations: Alembic in `migrations/`, auto-applied by `script/setup`
+- E2E tests: Playwright in `e2e/`, config in `playwright.config.ts`
+
+### Browser Testing
+
+A **Playwright MCP server** is configured in `.vscode/mcp.json` for interactive browser testing via agent mode. Use the `/test-in-browser` slash command for the full workflow — it teaches you how to navigate the app, interact with elements, and verify results using accessibility snapshots.
 
 
 ### Commit Messages

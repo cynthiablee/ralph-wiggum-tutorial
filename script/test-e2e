@@ -1,0 +1,17 @@
+#!/bin/bash
+# script/test-e2e - Run Playwright end-to-end tests
+#
+# Runs browser-based E2E tests against the full application stack.
+# The Playwright config auto-starts Flask + Vite dev servers if needed.
+#
+# Usage:
+#   script/test-e2e              # Run all E2E tests
+#   script/test-e2e --ui         # Open Playwright UI mode
+#   script/test-e2e --debug      # Run with Playwright Inspector
+
+set -e
+
+cd "$(dirname "$0")/.."
+
+echo "==> Running E2E tests..."
+npx playwright test "$@"

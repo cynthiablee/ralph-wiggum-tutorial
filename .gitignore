@@ -47,7 +47,8 @@ src/app/static/manifest.json
 
 # IDE
 .idea/
-.vscode/
+.vscode/*
+!.vscode/mcp.json
 *.swp
 *.swo
 *~
@@ -59,6 +60,12 @@ htmlcov/
 .mypy_cache/
 .ruff_cache/
 coverage/
+
+# Playwright
+test-results/
+playwright-report/
+blob-report/
+/playwright/.cache/
 
 # OS
 .DS_Store
