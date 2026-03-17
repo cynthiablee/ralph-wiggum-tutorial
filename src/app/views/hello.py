@@ -20,7 +20,8 @@ def index():  # type: ignore[no-untyped-def]
     which the frontend JavaScript will hydrate with React.
     """
     hellos = HelloController.get_all()
-    return render_template('hello/index.html', hellos=hellos)
+    hellos_data = [HelloResponse.model_validate(h).model_dump() for h in hellos]
+    return render_template('hello/index.html', hellos=hellos_data)
 
 
 @hello_bp.route('/api/hello', methods=['GET'])
