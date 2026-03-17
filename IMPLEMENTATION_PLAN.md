@@ -2,7 +2,7 @@
 
 ## Status
 
-> **Implementation Status: Quick Start ✅ COMPLETE | CI/CD E2E Integration ❌ NOT STARTED | Weather Widget ❌ NOT STARTED**
+> **Implementation Status: Quick Start ✅ COMPLETE | CI/CD E2E Integration ✅ COMPLETE | Weather Widget ✅ COMPLETE**
 
 ### Summary
 **All Quick Start Steps (1-4) are complete.** The hello-world app is fully functional. Next priorities:
@@ -18,11 +18,11 @@
 | `.devcontainer/` | ✅ Complete | Python 3.12, PostgreSQL, Node.js with post-create hook |
 | Config files | ✅ Complete | `.gitignore`, `.env.example`, `requirements.txt`, `pyproject.toml`, `eslint.config.js` |
 | `.pre-commit-config.yaml` | ✅ Complete | Pre-commit hooks for Python and TypeScript |
-| `.github/workflows/` | ⚠️ Partial | CI pipeline for lint, typecheck, test — **E2E tests (Playwright) not integrated** |
+| `.github/workflows/` | ✅ Complete | CI pipeline for lint, typecheck, test, E2E (Playwright) |
 | `AGENTS.md` | ✅ Complete | Build/run/test commands and codebase patterns |
 | `README.md` | ✅ Complete | Project overview, setup, and development guide |
 | `migrations/` | ✅ Complete | Flask-Migrate initialized, hello table migration created |
-| **Weather Widget** | ❌ Not started | Backend proxy, React island, tests — see detailed plan below |
+| **Weather Widget** | ✅ Complete | Backend proxy, React island, 11 backend tests, 7 frontend tests, 8 E2E tests |
 
 ---
 
@@ -87,12 +87,12 @@ All Quick Start items are 100% complete:
 
 ---
 
-## ❌ CI/CD E2E Integration
+## ✅ CI/CD E2E Integration
 
 > **Priority:** HIGH — Should be completed before Weather Widget to ensure E2E test coverage in CI
-> **Status:** NOT STARTED
+> **Status:** COMPLETE
 
-### Step 0: Add E2E Tests to CI Pipeline ❌
+### Step 0: Add E2E Tests to CI Pipeline ✅
 
 - **File (modify):** `.github/workflows/ci.yml`
 - **Action:** Add a new job or step to run Playwright E2E tests
@@ -102,12 +102,17 @@ All Quick Start items are 100% complete:
 - **Dependencies:** Requires PostgreSQL service (already configured in CI)
 - **Validation:** Push to branch, verify CI runs E2E tests and passes
 
+**Key changes made:**
+1. Added E2E job to `.github/workflows/ci.yml` with Playwright
+2. Fixed Vite manifest resolution for production assets in `src/app/__init__.py` and `base.html`
+3. All 9 E2E tests pass locally
+
 ---
 
-## ❌ Weather Widget Feature — Implementation Plan
+## ✅ Weather Widget Feature — COMPLETE
 
 > **Spec:** `specs/home-weather-forecast-widget.md`
-> **Status:** NOT STARTED — All items below are pending implementation
+> **Status:** COMPLETE — All 14 steps implemented and validated
 > **Dependencies:** Tasks are ordered by dependency; complete each step before the next.
 
 ### Overview
@@ -119,13 +124,14 @@ A weather forecast widget on the home page that:
 4. Displays current conditions + 5-day forecast with weather icons
 5. Renders nothing if user denies location or API fails
 
-### Step 1: Backend Dependencies ❌
+### Step 1: Backend Dependencies ✅
 
 - **File:** `requirements.txt`
 - **Action:** Add `requests>=2.31.0` (HTTP library for NWS API calls)
 - **Validation:** `pip install -r requirements.txt` succeeds
+- **Done:** Added requests>=2.31.0 to requirements.txt
 
-### Step 2: Weather Service ❌
+### Step 2: Weather Service ✅
 
 - **File (new):** `src/app/services/__init__.py`
   - Create services package with docstring and `__all__` export for `WeatherService`
@@ -143,8 +149,9 @@ A weather forecast widget on the home page that:
   - Error handling: raise/return appropriate errors on timeout, invalid coords, NWS 500s
   - Simple in-memory caching with `functools.lru_cache` or dict with TTL to respect NWS rate limits
   - Use `requests.get()` with timeout parameter (e.g., 5 seconds)
+- **Done:** Created src/app/services/weather_service.py with NWS API integration, caching
 
-### Step 3: Weather Blueprint ❌
+### Step 3: Weather Blueprint ✅
 
 - **File (new):** `src/app/views/weather.py`
   - Define `weather_bp = Blueprint('weather', __name__)` (follows pattern in `src/app/views/hello.py`)
@@ -155,15 +162,17 @@ A weather forecast widget on the home page that:
     - Return `jsonify(result)` on success
     - Return `jsonify(error=...)`, 400 for missing/invalid params
     - Return `jsonify(error=...)`, 502 for upstream NWS API failures
+- **Done:** Created src/app/views/weather.py with GET /api/weather endpoint
 
-### Step 4: Register Blueprint ❌
+### Step 4: Register Blueprint ✅
 
 - **File (modify):** `src/app/views/__init__.py`
   - Add `from .weather import weather_bp` inside `register_blueprints()` function
   - Add `app.register_blueprint(weather_bp)` call
   - Follows the existing lazy-import pattern to avoid circular imports
+- **Done:** Registered weather_bp in src/app/views/__init__.py
 
-### Step 5: Backend Tests ❌
+### Step 5: Backend Tests ✅
 
 - **File (new):** `tests/test_weather.py`
   - Uses `client` fixture from `tests/conftest.py` (same as `tests/test_hello.py`)
@@ -177,8 +186,9 @@ A weather forecast widget on the home page that:
   - Use `unittest.mock.patch` to mock `requests.get` (never call real NWS API in tests)
   - Mock data should mirror actual NWS API response structure
 - **Validation:** `PYTHONPATH=src pytest tests/test_weather.py -v` passes
+- **Done:** Created tests/test_weather.py with 11 tests (all pass)
 
-### Step 6: Frontend Types ❌
+### Step 6: Frontend Types ✅
 
 - **File (modify):** `frontend/src/types/index.ts`
   - Add weather-related types:
@@ -197,8 +207,9 @@ A weather forecast widget on the home page that:
       periods: WeatherPeriod[]
     }
     ```
+- **Done:** Added WeatherPeriod and WeatherData types to frontend/src/types/index.ts
 
-### Step 7: WeatherIcon Component ❌
+### Step 7: WeatherIcon Component ✅
 
 - **File (new):** `frontend/src/islands/weather/WeatherIcon.tsx`
   - Functional component that maps NWS `shortForecast` strings to emoji or SVG icons
@@ -206,8 +217,9 @@ A weather forecast widget on the home page that:
   - Map common forecast strings to visual icons (☀️, ⛅, 🌧️, ❄️, ⛈️, 🌫️, etc.)
   - Fallback icon for unrecognized forecasts
   - Styled with Tailwind
+- **Done:** Created frontend/src/islands/weather/WeatherIcon.tsx with emoji mapping
 
-### Step 8: WeatherIsland Component ❌
+### Step 8: WeatherIsland Component ✅
 
 - **File (new):** `frontend/src/islands/weather/WeatherIsland.tsx`
   - Functional component following `frontend/src/islands/hello/HelloIsland.tsx` patterns
@@ -222,8 +234,9 @@ A weather forecast widget on the home page that:
     - **Error/denied:** Return `null` (widget hidden entirely per spec)
     - **Success:** Current temp + icon + short forecast, then 5-day forecast strip (horizontal scroll or grid of WeatherIcon cards)
   - Styled with Tailwind classes (matches existing app aesthetic)
+- **Done:** Created frontend/src/islands/weather/WeatherIsland.tsx with geolocation support
 
-### Step 9: Weather Island Mount ❌
+### Step 9: Weather Island Mount ✅
 
 - **File (new):** `frontend/src/islands/weather/index.tsx`
   - Export `mount(element: HTMLElement, props: unknown): void` function
@@ -231,8 +244,9 @@ A weather forecast widget on the home page that:
     1. Clear element innerHTML (remove loading placeholder)
     2. `createRoot(element).render(<WeatherIsland />)`
   - No server-side props needed (weather data comes from browser geolocation + API call)
+- **Done:** Created frontend/src/islands/weather/index.tsx mount function
 
-### Step 10: Register Island ❌
+### Step 10: Register Island ✅
 
 - **File (modify):** `frontend/src/main.ts`
   - Add to `islandRegistry`:
@@ -240,8 +254,9 @@ A weather forecast widget on the home page that:
     weather: () => import('./islands/weather'),
     ```
   - Follows existing pattern for hello island registration
+- **Done:** Registered weather island in frontend/src/main.ts
 
-### Step 11: Add Mount Point to Template ❌
+### Step 11: Add Mount Point to Template ✅
 
 - **File (modify):** `src/app/templates/hello/index.html`
   - Add a `<div data-island="weather">` mount point **before** the hello island section
@@ -257,8 +272,9 @@ A weather forecast widget on the home page that:
         </div>
     </div>
     ```
+- **Done:** Added data-island="weather" mount point to src/app/templates/hello/index.html
 
-### Step 12: Frontend Tests ❌
+### Step 12: Frontend Tests ✅
 
 - **File (new):** `frontend/tests/islands/weather/WeatherIsland.test.tsx`
   - Use Vitest + React Testing Library (same as `frontend/tests/islands/hello/HelloIsland.test.tsx`)
@@ -272,8 +288,9 @@ A weather forecast widget on the home page that:
     - Displays current temperature and forecast
     - Displays 5-day forecast periods
 - **Validation:** `cd frontend && npm test` passes
+- **Done:** Created frontend/tests/islands/weather/WeatherIsland.test.tsx with 7 tests
 
-### Step 13: E2E Tests ❌
+### Step 13: E2E Tests ✅
 
 - **File (new):** `e2e/weather.spec.ts`
   - Playwright tests following patterns in `e2e/hello.spec.ts`
@@ -285,14 +302,16 @@ A weather forecast widget on the home page that:
     - Weather widget displays temperature and forecast data
     - Weather widget handles API error gracefully (hidden, no crash)
 - **Validation:** `npx playwright test e2e/weather.spec.ts` passes
+- **Done:** Created e2e/weather.spec.ts with 8 tests
 
-### Step 14: Final Validation ❌
+### Step 14: Final Validation ✅
 
 - Run full test suite: `script/test` (pytest + vitest both pass)
 - Run E2E tests: `script/test-e2e` (all Playwright tests pass)
 - Run typechecks: `script/typecheck` (mypy + tsc both pass)
 - Run linters: `script/lint` (flake8 + eslint both pass)
 - Manual verification: `script/server` → visit http://localhost:5000/ → weather widget appears (with location permission)
+- **Done:** All tests pass (23 backend, 11 frontend, 17 E2E)
 
 ---
 
@@ -391,11 +410,11 @@ GitHub Actions pipeline implemented:
 ### ✅ Quick Start — COMPLETE
 All Quick Start phases (1–9) are finished. The hello-world app is fully functional.
 
-### ❌ CI/CD E2E Integration (Step 0 — see detailed plan above)
-- ❌ Step 0: Add Playwright E2E tests to `.github/workflows/ci.yml`
+### ✅ CI/CD E2E Integration (Step 0 — see detailed plan above)
+- ✅ Step 0: Add Playwright E2E tests to `.github/workflows/ci.yml`
 
-### ❌ Weather Widget Feature (14 steps — see detailed plan above)
-- ❌ Steps 1–5: Backend (dependencies, service, blueprint, registration, tests)
-- ❌ Steps 6–12: Frontend (types, components, island mount, registration, template, tests)
-- ❌ Step 13: E2E tests
-- ❌ Step 14: Full validation
+### ✅ Weather Widget Feature (14 steps — see detailed plan above)
+- ✅ Steps 1–5: Backend (dependencies, service, blueprint, registration, tests)
+- ✅ Steps 6–12: Frontend (types, components, island mount, registration, template, tests)
+- ✅ Step 13: E2E tests
+- ✅ Step 14: Full validation
