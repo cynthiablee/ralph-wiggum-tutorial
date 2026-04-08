@@ -1,11 +1,11 @@
 /**
  * HelloIsland - Interactive greeting component
- * 
+ *
  * Demonstrates the islands pattern by:
  * - Receiving initial data from server via data-props
  * - Fetching fresh data from API
  * - Allowing users to add new greetings
- * 
+ *
  * This island handles its own data fetching and state management,
  * making it self-contained and portable.
  */
@@ -80,54 +80,55 @@ export function HelloIsland({ initialData = [] }: HelloIslandProps) {
 
   return (
     <div className="space-y-6">
-      {/* Add new greeting form */}
-      <form onSubmit={handleSubmit} className="flex gap-2">
+      {/* Add new message form */}
+      <form onSubmit={handleSubmit} className="flex gap-3">
         <input
           type="text"
           value={message}
           onChange={(e) => setMessage(e.target.value)}
-          placeholder="Enter a greeting..."
-          className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="Share a thought on AI and CS education..."
+          className="flex-1 px-4 py-3 border border-slate-300 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
           disabled={loading}
           maxLength={255}
         />
         <button
           type="submit"
           disabled={loading || !message.trim()}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="px-6 py-3 bg-indigo-600 text-white font-semibold rounded-xl hover:bg-indigo-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
         >
-          {loading ? 'Adding...' : 'Add'}
+          {loading ? 'Posting…' : 'Post'}
         </button>
       </form>
 
       {/* Error message */}
       {error && (
-        <div className="p-3 bg-red-100 text-red-700 rounded-lg">
+        <div className="p-4 bg-rose-50 border border-rose-200 text-rose-700 rounded-xl text-sm">
           {error}
         </div>
       )}
 
-      {/* Greetings list */}
-      <div className="space-y-2">
+      {/* Messages list */}
+      <div className="space-y-3">
         {hellos.length === 0 ? (
-          <p className="text-gray-500 italic">No greetings yet. Add one above!</p>
+          <p className="text-slate-400 italic text-center py-8">No messages yet — be the first to share a thought!</p>
         ) : (
           hellos.map((hello) => (
             <div
               key={hello.id}
-              className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+              className="flex items-start justify-between gap-4 p-4 bg-slate-50 border border-slate-100 rounded-xl hover:bg-slate-100 transition-colors"
             >
-              <div>
-                <span className="text-gray-800">{hello.message}</span>
-                <span className="text-gray-400 text-sm ml-2">
-                  {new Date(hello.created_at).toLocaleDateString()}
-                </span>
+              <div className="flex-1 min-w-0">
+                <p className="text-slate-800 leading-relaxed">{hello.message}</p>
+                <p className="text-slate-400 text-xs mt-1">
+                  {new Date(hello.created_at).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}
+                </p>
               </div>
               <button
                 onClick={() => handleDelete(hello.id)}
-                className="text-red-500 hover:text-red-700 text-sm"
+                className="shrink-0 text-slate-300 hover:text-rose-500 transition-colors text-sm font-medium"
+                aria-label="Delete message"
               >
-                Delete
+                ✕
               </button>
             </div>
           ))

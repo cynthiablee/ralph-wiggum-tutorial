@@ -1,16 +1,11 @@
 # Implementation Plan — ralph-wiggum-tutorial
 
-## Status
-
-> **Implementation Status: ~90% Complete — Quick Start fully implemented**
+> **Last audited:** 2026-04-08 — Pong game + leaderboard feature added
 
 ### Summary
-**All Quick Start Steps (1-4) are complete.** The application is fully functional with:
-- ✅ Flask backend with models, views, and templates
-- ✅ React Islands frontend with Vite and Tailwind
-- ✅ All development scripts (bootstrap, setup, server, test, lint, typecheck)
-- ✅ Python tests and pre-commit hooks
-- ✅ GitHub Actions CI/CD pipeline
+**Hello World app is complete. Next priority: Pong game + leaderboard feature.**
+
+See `specs/pong-game-leaderboard.md` for the full implementation spec (18 steps, 3 phases).
 
 | Area | Status | Details |
 |------|--------|---------|
@@ -28,7 +23,51 @@
 
 ---
 
-## Quick Start Implementation Order
+## 🎮 NEW FEATURE: Pong Game + Leaderboard
+
+**Status: ⏳ NOT STARTED — This is the current implementation priority.**
+
+Full spec: `specs/pong-game-leaderboard.md` (18 steps, 3 phases)
+
+### Phase 1 — Backend Foundation (Steps 1–6)
+- ⏳ Step 1: `LeaderboardEntry` SQLAlchemy model in `src/app/models/leaderboard.py`
+- ⏳ Step 2: Alembic migration for `leaderboard_entries` table (auto-generate with `flask db migrate`)
+- ⏳ Step 3: Pydantic v2 schemas — `LeaderboardEntryResponse`, `LeaderboardEntryCreate` in `src/app/schemas/leaderboard.py`
+- ⏳ Step 4: Controller — `list_entries`, `create_entry` in `src/app/controllers/leaderboard.py`
+- ⏳ Step 5: Blueprint + Jinja2 template — `src/app/views/pong.py`, `src/app/templates/pong/index.html`
+- ⏳ Step 6: API Blueprint — `GET /api/leaderboard`, `POST /api/leaderboard` in `src/app/views/pong_api.py`
+
+### Phase 2 — Frontend (Steps 7–14)
+- ⏳ Step 7: E2E test file `e2e/pong.spec.ts` (write early as acceptance targets)
+- ⏳ Step 8: Shared TypeScript types — `Difficulty`, `LeaderboardEntry`, `LeaderboardCreate` in `frontend/src/types/index.ts`
+- ⏳ Step 9: Game engine — pure functions in `frontend/src/islands/pong/gameEngine.ts` + types in `pong/types.ts`
+- ⏳ Step 10: `PongCanvas.tsx` — pure renderer, no game loop
+- ⏳ Step 11: `LeaderboardPanel.tsx` — difficulty tabs + entry table
+- ⏳ Step 12: `PongIsland.tsx` — owns game loop (two effects: RAF + game-over watcher), keyboard/mouse input, API calls
+- ⏳ Step 13: Island mount `frontend/src/islands/pong/index.tsx`
+- ⏳ Step 14: Register island in `frontend/src/main.ts` + Blueprint in `src/app/views/__init__.py`
+
+### Phase 3 — Tests + Polish (Steps 15–18)
+- ⏳ Step 15: Backend unit tests `tests/test_leaderboard.py`
+- ⏳ Step 16: Frontend unit tests for game engine + components
+- ⏳ Step 17: Nav link to `/pong` from homepage footer
+- ⏳ Step 18: Run full validation (`script/test`, `script/typecheck`, `script/lint`, `npx playwright test`)
+
+### Key Technical Notes for Implementation
+- **Pydantic `player_name`**: Use `Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=50)]` — `Field(min_length=1)` does NOT strip whitespace
+- **SQLite compat**: `op.create_index` must use plain `columns=['difficulty', 'score']` — NO `desc()` syntax (breaks SQLite in tests)
+- **Game loop**: Two separate `useEffect`s — Effect 1 is the RAF loop `[uiPhase]` dep only; Effect 2 watches `gameState.phase` for game-over. Never read `gameState` directly inside RAF (stale closure).
+- **`setGameState` in RAF**: MUST use functional form `setGameState(prev => tick(prev, playerPaddleYRef.current))` — capturing state directly freezes after frame 1
+- **Leaderboard pre-load**: 3 queries (one per difficulty, limit 10 each) → ≤30 entries in `data-props`; client-side filter by tab
+- **`down_revision`**: New migration must point to `e31396db40b1` (existing hello table migration)
+- **`Difficulty` type**: Define ONCE in `frontend/src/types/index.ts`; import everywhere, never redefine
+- **Score gate**: Show submit form only when `gameState.playerScore >= 1`
+- **ESLint**: `react-hooks/exhaustive-deps` is `warn` — game loop effect deps must be correct
+- **`leaderboardDifficulty` initial value**: `'medium'`; after score submission call `fetchLeaderboard(difficulty)` then set `leaderboardDifficulty = difficulty`
+
+---
+
+
 
 ✅ **All items below are COMPLETE.** The hello-world app is fully functional with Flask serving a page containing a mounted React island.
 
@@ -186,7 +225,7 @@ GitHub Actions pipeline implemented:
 Files to create/update:
 - `AGENTS.md` — Build/run/test commands and codebase patterns
 
-### 9.2 README.md Update  
+### 9.2 README.md Update
 **Priority:** P2 (In Progress)
 **Status:** ⏳ Being updated now
 

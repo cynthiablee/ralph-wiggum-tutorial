@@ -1,49 +1,159 @@
 {% extends "base.html" %}
 
-{% block title %}Hello - Ralph Wiggum Tutorial{% endblock %}
+{% block title %}CS Education in the Age of AI{% endblock %}
 
 {% block content %}
-<main class="container mx-auto px-4 py-8">
-    <h1 class="text-3xl font-bold mb-8 text-gray-800">Hello World</h1>
-    
-    {# React Island Mount Point #}
-    {# The frontend JavaScript finds this element and mounts the HelloIsland component #}
-    {# data-props passes initial data from the server to avoid a loading state #}
-    <div 
-        data-island="hello" 
-        data-props='{{ hellos | tojson | safe }}'
-        class="bg-white rounded-lg shadow p-6"
-    >
-        {# Server-rendered fallback content #}
-        {# Shown before JavaScript hydrates, provides baseline UX #}
-        <noscript>
-            <p class="text-gray-600 mb-4">JavaScript is required for interactive features.</p>
-        </noscript>
-        
-        {# Initial loading state #}
-        <div class="animate-pulse">
-            <div class="h-4 bg-gray-200 rounded w-3/4 mb-4"></div>
-            <div class="h-4 bg-gray-200 rounded w-1/2"></div>
-        </div>
+
+{# ── Hero ────────────────────────────────────────────────────────────────── #}
+<header class="relative overflow-hidden bg-gradient-to-br from-indigo-900 via-violet-900 to-slate-900 text-white">
+    <div class="absolute inset-0 opacity-10"
+         style="background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'1\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');">
     </div>
-    
-    {# Server-rendered list as fallback #}
-    <section class="mt-8">
-        <h2 class="text-xl font-semibold mb-4 text-gray-700">Messages (Server Rendered)</h2>
-        {% if hellos %}
-            <ul class="space-y-2">
-                {% for hello in hellos %}
-                    <li class="p-3 bg-white rounded shadow-sm">
-                        {{ hello.message }}
-                        <span class="text-gray-400 text-sm ml-2">
-                            {{ hello.created_at.strftime('%Y-%m-%dT%H:%M') }}
-                        </span>
-                    </li>
-                {% endfor %}
-            </ul>
-        {% else %}
-            <p class="text-gray-500">No messages yet. Add one using the React island above!</p>
-        {% endif %}
+    <div class="relative max-w-5xl mx-auto px-6 py-24 md:py-32">
+        <div class="inline-flex items-center gap-2 bg-white/10 border border-white/20 rounded-full px-4 py-1.5 text-sm font-medium text-indigo-200 mb-8">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            A critical moment for computer science education
+        </div>
+        <h1 class="text-4xl md:text-6xl font-extrabold leading-tight tracking-tight mb-6">
+            The Profession Has Changed.<br>
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-300 to-violet-300">
+                Has the Curriculum?
+            </span>
+        </h1>
+        <p class="text-lg md:text-xl text-slate-300 max-w-2xl leading-relaxed">
+            Artificial intelligence is reshaping software engineering faster than any technology shift in a generation.
+            The question is no longer whether AI will transform the field — it already has.
+            The question is whether universities are ready to prepare the engineers who will work alongside it.
+        </p>
+    </div>
+</header>
+
+{# ── Editorial ───────────────────────────────────────────────────────────── #}
+<main class="max-w-5xl mx-auto px-6 py-16">
+
+    {# Lead section #}
+    <section class="grid md:grid-cols-3 gap-12 mb-20">
+        <div class="md:col-span-2 space-y-6 text-lg text-slate-700 leading-relaxed">
+            <p class="text-2xl font-semibold text-slate-900 leading-snug">
+                We are living through a paradigm shift — and the academy cannot afford to be a spectator.
+            </p>
+            <p>
+                Tools like GitHub Copilot, Claude, and GPT-4 can now write, review, refactor, and explain code at
+                a level that was science fiction five years ago. Entire categories of entry-level programming tasks —
+                boilerplate generation, unit test scaffolding, API lookup, even debugging — are being absorbed by AI
+                pair programmers that never sleep and never complain.
+            </p>
+            <p>
+                This is not incremental improvement. It is a structural change to what "being a software engineer"
+                means. And it raises an urgent question for every computer science department in the world:
+                <strong class="text-slate-900">What, exactly, are we preparing students to do?</strong>
+            </p>
+        </div>
+        <aside class="space-y-4">
+            <div class="bg-indigo-50 border-l-4 border-indigo-500 rounded-r-xl p-5">
+                <p class="text-indigo-900 font-semibold text-sm uppercase tracking-wide mb-1">The shift in numbers</p>
+                <p class="text-3xl font-bold text-indigo-700">55%</p>
+                <p class="text-slate-600 text-sm mt-1">of developers now use AI coding tools daily, up from near-zero in 2021.</p>
+            </div>
+            <div class="bg-violet-50 border-l-4 border-violet-500 rounded-r-xl p-5">
+                <p class="text-violet-900 font-semibold text-sm uppercase tracking-wide mb-1">Productivity impact</p>
+                <p class="text-3xl font-bold text-violet-700">2×</p>
+                <p class="text-slate-600 text-sm mt-1">Tasks completed per hour in studies measuring AI-augmented engineering.</p>
+            </div>
+        </aside>
     </section>
+
+    {# Three pillars #}
+    <section class="mb-20">
+        <h2 class="text-3xl font-bold text-slate-900 mb-2">What Must Change in the Classroom</h2>
+        <p class="text-slate-500 mb-10 text-lg">Three imperatives for CS faculty in the age of AI.</p>
+        <div class="grid md:grid-cols-3 gap-6">
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-7 hover:shadow-md transition-shadow">
+                <div class="w-11 h-11 bg-indigo-100 rounded-xl flex items-center justify-center mb-5">
+                    <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                    </svg>
+                </div>
+                <h3 class="font-bold text-slate-900 text-lg mb-3">Teach Judgment, Not Syntax</h3>
+                <p class="text-slate-600 leading-relaxed">
+                    Memorising APIs is no longer a differentiating skill. Faculty must shift focus to higher-order
+                    reasoning: system design, architectural trade-offs, security thinking, and the critical evaluation
+                    of AI-generated output. Students must learn to be discriminating consumers of AI assistance.
+                </p>
+            </div>
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-7 hover:shadow-md transition-shadow">
+                <div class="w-11 h-11 bg-emerald-100 rounded-xl flex items-center justify-center mb-5">
+                    <svg class="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    </svg>
+                </div>
+                <h3 class="font-bold text-slate-900 text-lg mb-3">Integrate AI as a Collaborator</h3>
+                <p class="text-slate-600 leading-relaxed">
+                    Banning AI tools from coursework is a losing battle — and the wrong lesson. Instead, faculty should
+                    design assignments that require students to work <em>with</em> AI effectively: directing it, correcting
+                    it, and understanding its limitations. Prompt engineering and iterative refinement are genuine
+                    professional skills now.
+                </p>
+            </div>
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-7 hover:shadow-md transition-shadow">
+                <div class="w-11 h-11 bg-rose-100 rounded-xl flex items-center justify-center mb-5">
+                    <svg class="w-6 h-6 text-rose-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                    </svg>
+                </div>
+                <h3 class="font-bold text-slate-900 text-lg mb-3">Ground Ethics in Reality</h3>
+                <p class="text-slate-600 leading-relaxed">
+                    Algorithmic bias, intellectual property questions around training data, the environmental cost
+                    of large models, and the risks of automation in high-stakes systems — these are not abstract
+                    philosophy. They are live professional questions graduates will face on their first day. Curricula
+                    that ignore them are producing incomplete engineers.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    {# Call to action quote #}
+    <section class="bg-gradient-to-r from-indigo-600 to-violet-600 rounded-3xl p-10 md:p-14 text-white mb-20">
+        <svg class="w-10 h-10 text-indigo-300 mb-6" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/>
+        </svg>
+        <blockquote class="text-2xl md:text-3xl font-semibold leading-snug mb-6 max-w-3xl">
+            The departments that thrive will be those that treat AI not as a threat to academic integrity,
+            but as a new medium — one that demands a richer, more demanding kind of computer science education.
+        </blockquote>
+        <p class="text-indigo-200 text-lg">
+            The next generation of engineers will not compete with AI. They will wield it. Faculty have a
+            responsibility — and a remarkable opportunity — to ensure those engineers wield it wisely.
+        </p>
+    </section>
+
+    {# Interactive island #}
+    <section class="mb-16">
+        <h2 class="text-2xl font-bold text-slate-900 mb-2">Join the Conversation</h2>
+        <p class="text-slate-500 mb-8">Share your thoughts on AI and CS education.</p>
+        <div
+            data-island="hello"
+            data-props='{{ hellos | tojson | safe }}'
+            class="bg-white rounded-2xl border border-slate-200 shadow-sm p-8"
+        >
+            <noscript>
+                <p class="text-slate-500">JavaScript is required for the interactive message board.</p>
+            </noscript>
+            <div class="animate-pulse space-y-3">
+                <div class="h-10 bg-slate-100 rounded-lg w-full"></div>
+                <div class="h-4 bg-slate-100 rounded w-3/4"></div>
+                <div class="h-4 bg-slate-100 rounded w-1/2"></div>
+            </div>
+        </div>
+    </section>
+
 </main>
+
+{# ── Footer ──────────────────────────────────────────────────────────────── #}
+<footer class="border-t border-slate-200 bg-white">
+    <div class="max-w-5xl mx-auto px-6 py-8 text-center text-slate-400 text-sm">
+        Built with Flask &amp; React · Styled with Tailwind CSS
+    </div>
+</footer>
+
 {% endblock %}
