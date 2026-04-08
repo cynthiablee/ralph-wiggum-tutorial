@@ -1,0 +1,11 @@
+Pong game + leaderboard: Full 18-step implementation.
+
+Key decisions:
+- Two-effect game loop pattern: RAF effect with functional setState to avoid stale closures, separate game-over watcher effect
+- Pydantic v2 StringConstraints(strip_whitespace=True) for player_name — Field(min_length=1) alone won't reject whitespace-only names
+- Migration uses plain column list for index (no DESC) for SQLite compatibility in tests
+- Leaderboard pre-loads 10 entries per difficulty (3 queries, up to 30 total) for instant tab switching
+- Fixed pre-existing HelloIsland test failures: component text had changed from 'greetings' to 'messages' and 'Add' to 'Post'
+- Installed @testing-library/user-event as devDep for LeaderboardPanel tab interaction tests
+- Migration down_revision points to e31396db40b1 (hello table migration)
+- Difficulty type defined once in frontend/src/types/index.ts, imported everywhere else
