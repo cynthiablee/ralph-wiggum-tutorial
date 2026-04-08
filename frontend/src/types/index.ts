@@ -1,7 +1,8 @@
 /**
  * Shared TypeScript types for the application.
- * 
+ *
  * These types are used across islands, components, and API interactions.
+ * Difficulty is the canonical definition — import it everywhere, never redefine.
  */
 
 /**
@@ -35,4 +36,30 @@ export interface ApiError {
  */
 export type IslandProps<T = unknown> = {
   initialData?: T
+}
+
+/**
+ * Game difficulty level — single source of truth.
+ * Import from here everywhere; never redefine.
+ */
+export type Difficulty = 'easy' | 'medium' | 'hard'
+
+/**
+ * Leaderboard entry from the API.
+ */
+export interface LeaderboardEntry {
+  id: number
+  player_name: string
+  score: number
+  difficulty: Difficulty
+  created_at: string
+}
+
+/**
+ * Request payload for creating a leaderboard entry.
+ */
+export interface LeaderboardCreate {
+  player_name: string
+  score: number
+  difficulty: Difficulty
 }
